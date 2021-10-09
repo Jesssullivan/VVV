@@ -6,12 +6,26 @@ VVV is a local developer environment, mainly aimed at [WordPress](https://wordpr
 
 ## How To Use
 
-To use it, download and install [Vagrant](https://www.vagrantup.com) and [VirtualBox](https://www.virtualbox.org/). Then, clone this repository and run:
+*download and install:*
+-  [Vagrant](https://www.vagrantup.com):
+    ```
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    sudo apt-get update && sudo apt-get install vagrant
+    ```
 
-```shell
-vagrant plugin install --local
-vagrant up --provision
-```
+- [VirtualBox](https://www.virtualbox.org/): 
+    ```
+    wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+    sudo apt-get update
+    sudo apt-get install virtualbox-6.1
+    ```
+
+- Then, clone this repository and run:
+  ```
+  vagrant plugin install --local
+  vagrant up --provision
+  ```
 
 When it's done, visit [http://vvv.test](http://vvv.test).
 
