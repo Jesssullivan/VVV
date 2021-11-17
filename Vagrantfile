@@ -212,7 +212,7 @@ defaults['memory'] = 2048
 defaults['cores'] = 1
 defaults['provider'] = 'virtualbox'
 # This should rarely be overridden, so it's not included in the config/default-config.yml file.
-defaults['private_network_ip'] = '192.168.50.4'
+defaults['private_network_ip'] = '192.168.56.4'
 
 vvv_config['vm_config'] = defaults.merge(vvv_config['vm_config'])
 vvv_config['hosts'] = vvv_config['hosts'].uniq
@@ -365,7 +365,6 @@ Vagrant.configure('2') do |config|
   config.vm.provider :hyperv do |v|
     v.memory = vvv_config['vm_config']['memory']
     v.cpus = vvv_config['vm_config']['cores']
-    v.enable_virtualization_extensions = true
     v.linked_clone = true
   end
 
@@ -419,8 +418,7 @@ Vagrant.configure('2') do |config|
     # this seems to be the most reliable way to detect whether or not we're
     # running under ARM64.
     if Etc.uname[:version].include? 'ARM64'
-      override.vm.box = 'rueian/ubuntu20-m1'
-      override.vm.box_version = "0.0.1"
+      override.vm.box = 'mpasternak/focal64-arm'
     end
   end
 
@@ -455,6 +453,9 @@ Vagrant.configure('2') do |config|
   if !vvv_config['vagrant-plugins']['disksize'].nil? && defined?(Vagrant::Disksize)
     config.vm.provider :virtualbox do |_v, override|
       override.disksize.size = vvv_config['vagrant-plugins']['disksize']
+    end
+    if Etc.uname[:version].include? 'ARM64'
+      puts "WARNING: Vagrant disksize requires VirtualBox and is incompatible with Arm devices, uninstall immediatley"
     end
   end
 
@@ -565,10 +566,10 @@ Vagrant.configure('2') do |config|
   #
   # If a log directory exists in the same directory as your Vagrantfile, a mapped
   # directory inside the VM will be created for some generated log files.
-  config.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'syslog', mount_options: ['dmode=777', 'fmode=666']
-  config.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'syslog', mount_options: ['dmode=777', 'fmode=666']
-  config.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'syslog', mount_options: ['dmode=777', 'fmode=666']
-  config.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'syslog', mount_options: ['dmode=777', 'fmode=666']
+  config.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'root', mount_options: ['dmode=777', 'fmode=666']
+  config.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'root', mount_options: ['dmode=777', 'fmode=666']
+  config.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'root', mount_options: ['dmode=777', 'fmode=666']
+  config.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'root', mount_options: ['dmode=777', 'fmode=666']
 
   # /srv/www/
   #
@@ -590,10 +591,10 @@ Vagrant.configure('2') do |config|
   config.vm.provider :parallels do |_v, override|
     override.vm.synced_folder 'www/', '/srv/www', owner: 'vagrant', group: 'www-data', mount_options: [ 'share' ]
 
-    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'syslog', mount_options: [ 'share' ]
-    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'syslog', mount_options: [ 'share' ]
-    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'syslog', mount_options: [ 'share' ]
-    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'syslog', mount_options: [ 'share' ]
+    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'root', mount_options: [ 'share' ]
+    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'root', mount_options: [ 'share' ]
+    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'root', mount_options: [ 'share' ]
+    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'root', mount_options: [ 'share' ]
 
     if use_db_share == true
       # Map the MySQL Data folders on to mounted folders so it isn't stored inside the VM
@@ -622,10 +623,10 @@ Vagrant.configure('2') do |config|
       override.vm.synced_folder 'database/data/', '/var/lib/mysql', create: true, owner: 112, group: 115, mount_options: ['dir_mode=0775', 'file_mode=0664']
     end
 
-    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'syslog', mount_options: ['dir_mode=0777', 'file_mode=0666']
-    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'syslog', mount_options: ['dir_mode=0777', 'file_mode=0666']
-    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'syslog', mount_options: ['dir_mode=0777', 'file_mode=0666']
-    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'syslog', mount_options: ['dir_mode=0777', 'file_mode=0666']
+    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'root', mount_options: ['dir_mode=0777', 'file_mode=0666']
+    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'root', mount_options: ['dir_mode=0777', 'file_mode=0666']
+    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'root', mount_options: ['dir_mode=0777', 'file_mode=0666']
+    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'root', mount_options: ['dir_mode=0777', 'file_mode=0666']
 
     vvv_config['sites'].each do |site, args|
       next if args['skip_provisioning']
@@ -641,10 +642,10 @@ Vagrant.configure('2') do |config|
   config.vm.provider :vmware_desktop do |_v, override|
     override.vm.synced_folder 'www/', '/srv/www', owner: 'vagrant', group: 'www-data', mount_options: ['umask=002']
 
-    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'syslog', mount_options: ['umask=000']
-    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'syslog', mount_options: ['umask=000']
-    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'syslog', mount_options: ['umask=000']
-    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'syslog', mount_options: ['umask=000']
+    override.vm.synced_folder 'log/memcached', '/var/log/memcached', owner: 'root', create: true, group: 'root', mount_options: ['umask=000']
+    override.vm.synced_folder 'log/nginx', '/var/log/nginx', owner: 'root', create: true, group: 'root', mount_options: ['umask=000']
+    override.vm.synced_folder 'log/php', '/var/log/php', create: true, owner: 'root', group: 'root', mount_options: ['umask=000']
+    override.vm.synced_folder 'log/provisioners', '/var/log/provisioners', create: true, owner: 'root', group: 'root', mount_options: ['umask=000']
 
     if use_db_share == true
       # Map the MySQL Data folders on to mounted folders so it isn't stored inside the VM

@@ -6,7 +6,7 @@ permalink: /docs/en-US/changelog/
 
 # Changelog
 
-## 3.8.x ( 2021 )
+## 3.8.1 ( 2021 November 15th )
 
 ### Enhancements
 
@@ -14,13 +14,24 @@ permalink: /docs/en-US/changelog/
 * Parallelised the tools provisioner ( #2520 )
 * Added the `unattended-upgrades` package to auto-upgrade packages with security updates ( #2513 )
 * Add `jq` for CLI based JSON parsing ( #2518 )
+* Improved Debian/Raspbian compatibility in apt package provisioners ( #2522 )
+* Added basic Avahi support for vvv.local ( #2523 )
 * Utiities have been renamed to extensions
+* VVV now warns when `vagrant-disksize` is installed on Arm/Apple Silicon devices
+* Changed Parallels Arm64 box
+* Added db.restore.exclude/include/restore_by_default parameters
 
 ### Bug Fixes
 
 * Fixed backwards compatibility for enabling backups in `config.yml` via `backup: true`
 * Fixed the import of databases with spaces in there names
 * Improved root certificate trust chain handling
+* Service restarts now have dedicated functions
+* Several evals removed from the hook functions
+* Disabled nested virtualisation under Hyper-V
+* Clock synchronisation now fails gracefully
+* The private IP requested has been changed to fit the restrictions in VirtualBox 6.1.28
+* If unset, VVV will now set the global git branch merge strategy to avoid provisioner failure
 
 ## 3.7.2 ( 2021 August 3rd )
 

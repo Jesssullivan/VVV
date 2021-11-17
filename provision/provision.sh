@@ -20,7 +20,11 @@ rm -f /vagrant/config.yml
 
 if [ -x "$(command -v ntpdate)" ]; then
 	echo " * Syncing clocks"
-	sudo ntpdate -u ntp.ubuntu.com
+	if sudo ntpdate -u ntp.ubuntu.com; then
+		echo " * clocks synced"
+	else
+		vvv_warn " - clock synchronisation failed"
+	fi
 else
 	echo " - skipping ntpdate clock sync, not installed yet"
 fi
@@ -59,6 +63,7 @@ export VVV_PACKAGE_REMOVAL_LIST=()
 . "/srv/provision/core/php/provision.sh"
 . "/srv/provision/core/mailhog/provision.sh"
 . "/srv/provision/core/nodejs/provision.sh"
+. "/srv/provision/core/avahi/provision.sh"
 
 ### SCRIPT
 #set -xv
@@ -71,11 +76,19 @@ if ! network_check; then
   exit 1
 fi
 
-vvv_info " * Upgrading apt packages."
-vvv_apt_packages_upgrade
-
 vvv_info " * Apt package install pre-checks"
 vvv_hook before_packages
+
+vvv_info " * Registering apt keys"
+vvv_hook register_apt_keys
+
+vvv_info " * Registering apt sources"
+vvv_hook register_apt_sources
+
+vvv_apt_packages_upgrade
+
+vvv_info " * Registering apt packages to install"
+vvv_hook register_apt_packages
 
 # Package and Tools Install
 vvv_info " * Main packages check and install."
